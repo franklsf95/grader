@@ -109,24 +109,24 @@ def main():
     args = parser.parse_args()
 
     if args.verbose:
-        print('Preparing to run test suite ' + args.test_dir + "...")
+        print('Preparing to run test suite ' + args.test_dir)
     module_filename = args.test_module + '.elm'
     shutil.copy(os.path.join(args.test_dir, TESTS_FILENAME), os.path.join(ELM_TESTER_DIR, 'tests'))
     shutil.copy(os.path.join(args.test_dir, module_filename), os.path.join(ELM_TESTER_DIR, 'tests'))
 
     if args.verbose:
-        print('Running tests... ', end='')
+        print('Running tests', end='')
     result_raw = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stdout=subprocess.PIPE)
     result_json = decode_result(result_raw)
     if args.verbose:
-        print('Done.')
+        print(' ...done.')
 
     if args.verbose:
-        print('Decoding rubric...')
+        print('Decoding rubric')
     rubric = decode_rubric(os.path.join(args.test_dir, RUBRIC_FILENAME))
 
     if args.verbose:
-        print('Generating report...')
+        print('Generating report')
     report = generate_report(result_json, rubric)
     if args.output is not None:
         with open(args.output, 'w') as f:
@@ -135,7 +135,7 @@ def main():
         print(report)
 
     if args.verbose:
-        print('Cleaning up...')
+        print('Cleaning up')
     os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
     os.remove(os.path.join(ELM_TESTER_DIR, 'tests', module_filename))
 
