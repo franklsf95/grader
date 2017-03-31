@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "summary": "Automated testing for CMSC 22300",
+    "repository": "https://github.com/franklsf95/grader.git",
+    "license": "MIT",
+    "source-directories": [
+        "."
+    ],
+    "exposed-modules": [
+    ],
+    "dependencies": {
+        "elm-lang/core": "5.0.0 <= v < 6.0.0",
+        "elm-community/elm-test": "3.1.0 <= v < 4.0.0"
+    },
+    "elm-version": "0.18.0 <= v < 0.19.0"
+}
