@@ -89,26 +89,30 @@ def generate_report(test_result, rubric):
             my_score = score if status else 0
             subtotal += score
             my_subtotal += my_score
-            report.append("  - Test Case {0}: {1} / {2}".format(test, my_score, score))
+            report.append("  - Test Case {0}: {1}/{2}".format(test, my_score, score))
         report.append('')
-        report.append("  Subtotal: {0} / {1}".format(my_subtotal, subtotal))
+        report.append("  Subtotal: {0}/{1}".format(my_subtotal, subtotal))
         report.append('')
         total += subtotal
         my_total += my_subtotal
     # Format result
-    report = ["Total Score: {0} / {1}".format(my_total, total), ''] + report
+    report = ["Total Score: {0}/{1}".format(my_total, total), ''] + report
     return '\n'.join(report)
 
 
 def main():
     parser = argparse.ArgumentParser(description='Set up and run Elm automated testing.')
     parser.add_argument('test_dir', help='directory containing test files and rubric')
+    parser.add_argument('test_module', help='module name to test, without the .elm extension')
+    parser.add_argument('-o', '--output', help='output file, default to stdout')
     parser.add_argument('-v', '--verbose', help='verbose mode', action='store_true')
     args = parser.parse_args()
 
     if args.verbose:
         print('Preparing to run test suite ' + args.test_dir + "...")
-    shutil.copyfile(os.path.join(args.test_dir, TESTS_FILENAME), os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
+    module_filename = args.test_module + '.elm'
+    shutil.copy(os.path.join(args.test_dir, TESTS_FILENAME), os.path.join(ELM_TESTER_DIR, 'tests'))
+    shutil.copy(os.path.join(args.test_dir, module_filename), os.path.join(ELM_TESTER_DIR, 'tests'))
 
     if args.verbose:
         print('Running tests... ', end='')
@@ -124,7 +128,16 @@ def main():
     if args.verbose:
         print('Generating report...')
     report = generate_report(result_json, rubric)
-    print(report)
+    if args.output is not None:
+        with open(args.output, 'w') as f:
+            print(report, file=f)
+    else:
+        print(report)
+
+    if args.verbose:
+        print('Cleaning up...')
+    os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
+    os.remove(os.path.join(ELM_TESTER_DIR, 'tests', module_filename))
 
 
 if __name__ == '__main__':
