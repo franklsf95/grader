@@ -72,7 +72,7 @@ def generate_report(test_result, rubric):
     Generates a test report based on test result and rubric.
     :param test_result: test result
     :param rubric: rubric
-    :return: string
+    :return: (string, int), (report text, score)
     """
     test_result = list(filter(lambda e: e['event'] == 'testCompleted', test_result))
     # Initialization
@@ -100,7 +100,8 @@ def generate_report(test_result, rubric):
         my_total += my_subtotal
     # Format result
     report = ["Total Score: {0}/{1}".format(my_total, total), ''] + report
-    return '\n'.join(report)
+    report_text = '\n'.join(report)
+    return report_text, my_total
 
 
 def main():
@@ -130,7 +131,7 @@ def main():
 
     if args.verbose:
         print('Generating report')
-    report = generate_report(result_json, rubric)
+    report, score = generate_report(result_json, rubric)
     if args.output is not None:
         with open(args.output, 'w') as f:
             print(report, file=f)
@@ -141,6 +142,8 @@ def main():
         print('Cleaning up')
     os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
     os.remove(os.path.join(ELM_TESTER_DIR, 'tests', module_filename))
+
+    exit(score)
 
 
 if __name__ == '__main__':

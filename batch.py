@@ -48,8 +48,9 @@ def grade(repo_name, args):
     Grades a repository for a homework by calling the grader module.
     :param repo_name: string
     :param args: arguments for grading
-    :return: None
+    :return: int, the grade
     """
+    return_score = 0
     print('> Grading', repo_name, HW_DIR)
     hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR)
     tests_path = os.path.join(TESTS_DIR, HW_DIR)
@@ -57,7 +58,7 @@ def grade(repo_name, args):
     rubric_path = os.path.join(hw_path, rubric_filename)
     try:
         # Skip if graded
-        if os.path.exists(rubric_path):
+        if not args.force and os.path.exists(rubric_path):
             print('> Skip, graded')
             return
         # Make sure the homework directory exists
@@ -67,7 +68,7 @@ def grade(repo_name, args):
         for file in HW_FILES:
             shutil.copy(os.path.join(hw_path, file), tests_path)
         # Run grader
-        subprocess.call(['./grader.py', '-v', '-o', rubric_path, tests_path, HW_MODULE])
+        return_score = subprocess.call(['./grader.py', '-v', '-o', rubric_path, tests_path, HW_MODULE])
     except FileNotFoundError as e:
         __report_zero(rubric_path, "I cannot find the required file {0}.".format(e.filename))
     finally:
@@ -77,11 +78,14 @@ def grade(repo_name, args):
                 os.remove(os.path.join(tests_path, file))
         except FileNotFoundError:
             pass
+        finally:
+            return return_score
 
 
 def main():
     parser = argparse.ArgumentParser(description='Batch operations for SVN repositories.')
     parser.add_argument('action', help='pull, grade or push')
+    parser.add_argument('-f', '--force', help='ignore existing grading', action='store_true')
     args = parser.parse_args()
 
     # Dispatch function
@@ -97,8 +101,14 @@ def main():
         repos = [line.strip() for line in f.readlines()]
 
     # Perform action on each repository
+    return_values = []
     for repo in repos:
-        fn(repo, args)
+        ret = fn(repo, args)
+        return_values.append(ret)
+
+    # Further actions
+    print(len(return_values))
+    print(float(sum(return_values)) / len(return_values))
 
 if __name__ == '__main__':
     main()
