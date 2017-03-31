@@ -48,14 +48,13 @@ def get_status(test_result, test, test_suite):
     :return: boolean
     """
     for item in test_result:
-        if item['event'] != 'testCompleted':
-            continue
         labels = item['labels']
         if len(labels) < 2:
             raise RuntimeError('Bad test label: ' + labels)
         suite = labels[-2]
         name = labels[-1]
         if suite == str(test_suite) and name == str(test):
+            test_result.remove(item)
             if item['status'] == 'pass':
                 return True
             elif item['status'] == 'fail':
@@ -72,9 +71,12 @@ def generate_report(test_result, rubric):
     :param rubric: rubric
     :return: string
     """
+    test_result = list(filter(lambda e: e['event'] == 'testCompleted', test_result))
+    # Initialization
     report = []
     total = 0
     my_total = 0
+    # Iterate over tests
     for test_suite in rubric:
         subtotal = 0
         my_subtotal = 0
@@ -93,6 +95,7 @@ def generate_report(test_result, rubric):
         report.append('')
         total += subtotal
         my_total += my_subtotal
+    # Format result
     report = ["Total Score: {0} / {1}".format(my_total, total), ''] + report
     return '\n'.join(report)
 
