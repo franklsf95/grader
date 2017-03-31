@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import yaml
 
 ELM_TESTER_DIR = './elm-tester'
@@ -60,8 +61,10 @@ def get_status(test_result, test, test_suite):
             elif item['status'] == 'fail':
                 return False
             else:
-                raise RuntimeError('Bad test result: ' + item['status'])
-    raise RuntimeError("Cannot find test result for {0} {1}".format(test_suite, test))
+                print('Bad test result: ', item['status'], file=sys.stderr)
+                return False
+    print("Cannot find test result for {0} {1}".format(test_suite, test), file=sys.stderr)
+    return False
 
 
 def generate_report(test_result, rubric):

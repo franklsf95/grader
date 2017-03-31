@@ -23,10 +23,10 @@ def pull(repo_name, _):
     """
     repo_path = os.path.join(REPOS_DIR, repo_name)
     if os.path.exists(repo_path):
-        print('Updating', repo_name)
+        print('> Updating', repo_name)
         subprocess.call(['svn', 'up'], cwd=repo_path)
     else:
-        print('Checking out', repo_name)
+        print('> Checking out', repo_name)
         repo_url = os.path.join(REPO_URL_PREFIX, repo_name)
         subprocess.call(['svn', 'co', repo_url], cwd=REPOS_DIR)
 
@@ -50,12 +50,16 @@ def grade(repo_name, args):
     :param args: arguments for grading
     :return: None
     """
-    print('Grading', repo_name, HW_DIR)
+    print('> Grading', repo_name, HW_DIR)
     hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR)
     tests_path = os.path.join(TESTS_DIR, HW_DIR)
     rubric_filename = "{0}.rubric.txt".format(HW_DIR)
     rubric_path = os.path.join(hw_path, rubric_filename)
     try:
+        # Skip if graded
+        if os.path.exists(rubric_path):
+            print('> Skip, graded')
+            return
         # Make sure the homework directory exists
         if not os.path.exists(hw_path):
             os.makedirs(hw_path)
@@ -63,7 +67,7 @@ def grade(repo_name, args):
         for file in HW_FILES:
             shutil.copy(os.path.join(hw_path, file), tests_path)
         # Run grader
-        subprocess.call(['./grader.py', '-o', rubric_path, tests_path, HW_MODULE])
+        subprocess.call(['./grader.py', '-v', '-o', rubric_path, tests_path, HW_MODULE])
     except FileNotFoundError as e:
         __report_zero(rubric_path, "I cannot find the required file {0}.".format(e.filename))
     finally:
