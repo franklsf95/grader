@@ -5,9 +5,10 @@ import os
 import shutil
 import subprocess
 
+import grader
+
 HW_DIR = 'hw1'
 HW_FILES = ['FPWarmup.elm']
-HW_MODULE = 'FPWarmup'
 REPO_URL_PREFIX = 'https://phoenixforge.cs.uchicago.edu/svn/'
 REPOS_LIST_FILE = '../repositories_list.txt'
 REPOS_DIR = '../repositories/'
@@ -68,7 +69,11 @@ def grade(repo_name, args):
         for file in HW_FILES:
             shutil.copy(os.path.join(hw_path, file), tests_path)
         # Run grader
-        return_score = subprocess.call(['./grader.py', '-v', '-o', rubric_path, tests_path, HW_MODULE])
+        argv = ['-v', tests_path, '-o', rubric_path]
+        if len(HW_FILES) > 0:
+            argv.append('-d')
+            argv.extend(HW_FILES)
+        return_score = grader.grade(argv)
     except FileNotFoundError as e:
         __report_zero(rubric_path, "I cannot find the required file {0}.".format(e.filename))
     finally:
@@ -93,8 +98,7 @@ def main():
         'pull': pull,
         'grade': grade,
     }.get(args.action, None)
-    if fn is None:
-        raise RuntimeError('Cannot perform action "{0}"'.format(args.action))
+    assert fn is not None, "Cannot perform action '{0}'".format(args.action)
 
     # Get the list of repositories
     with open(REPOS_LIST_FILE) as f:
@@ -107,8 +111,9 @@ def main():
         return_values.append(ret)
 
     # Further actions
-    print(len(return_values))
-    print(float(sum(return_values)) / len(return_values))
+    if args.action == 'grade':
+        print(len(return_values))
+        print(float(sum(return_values)) / len(return_values))
 
 if __name__ == '__main__':
     main()
