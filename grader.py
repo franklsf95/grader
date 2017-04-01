@@ -12,6 +12,14 @@ TEMPLATE_FILENAME = 'report_template.txt'
 TESTS_FILENAME = 'Tests.elm'
 
 
+class BrokenTestsError(Exception):
+    pass
+
+
+class TestingFailureError(Exception):
+    pass
+
+
 def decode_result(result_raw):
     """
     Parses the testing result into a Python object.
@@ -27,6 +35,20 @@ def decode_result(result_raw):
     return result
 
 
+def count_tests(tests_path):
+    """
+    Counts the number of tests in an Elm tests file.
+    :param tests_path: str
+    :return: int
+    """
+    with open(tests_path) as f:
+        ret = 0
+        for line in f.readlines():
+            if 'test "' in line:
+                ret += 1
+        return ret
+
+
 def decode_status(event):
     if event['status'] == 'pass':
         return True
@@ -37,14 +59,19 @@ def decode_status(event):
         return False
 
 
-def generate_report(test_result):
+def generate_report(test_result, n_tests):
     """
     Generates a test report based on test result.
-    :param test_result: test result
+    :param test_result: list, test result
+    :param n_tests: int, expected number of tests
     :return: (string, int), (report text, points)
     """
-    # Initialization
+    # Pre-processing
     test_events = list(filter(lambda e: e['event'] == 'testCompleted', test_result))
+    if len(test_events) != n_tests:
+        raise TestingFailureError("Wrong number of test results; expecting {0}, got {1}".format(n_tests, len(test_events)))
+
+    # Initialization
     report = []
     total = 0
     my_total = 0
@@ -68,11 +95,11 @@ def generate_report(test_result):
         # TODO: support arbitrary test suite depth
         # Extract test metadata
         if len(event['labels']) != 3:
-            raise RuntimeError('Invalid test labels')
+            raise BrokenTestsError('Invalid test labels')
         test_suite = event['labels'][1]
         test_name_list = event['labels'][2].split('@')
         if len(test_name_list) != 2:
-            raise RuntimeError('Invalid test name; must include points')
+            raise BrokenTestsError('Invalid test name; must include points')
         test = test_name_list[0].strip()
         points = float(test_name_list[1])
         if points.is_integer():
@@ -133,20 +160,27 @@ def grade(argv):
         print(' done.')
 
     if args.verbose:
+        print('Analyzing tests...')
+    n_tests = count_tests(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
+
+    if args.verbose:
         print('Generating report...')
-    report, score = generate_report(result_json)
+
+    try:
+        report, score = generate_report(result_json, n_tests)
+    finally:
+        if args.verbose:
+            print('Cleaning up...')
+        os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
+        if args.dependencies is not None:
+            for dep_filename in args.dependencies:
+                os.remove(os.path.join(ELM_TESTER_DIR, 'tests', dep_filename))
+
     if args.output is not None:
         with open(args.output, 'w') as f:
             print(report, file=f)
     else:
         print(report)
-
-    if args.verbose:
-        print('Cleaning up...')
-    os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
-    if args.dependencies is not None:
-        for dep_filename in args.dependencies:
-            os.remove(os.path.join(ELM_TESTER_DIR, 'tests', dep_filename))
 
     return score
 

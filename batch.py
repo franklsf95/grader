@@ -76,9 +76,12 @@ def grade(repo_name, args):
         return_score = grader.grade(argv)
     except FileNotFoundError as e:
         __report_zero(rubric_path, "I cannot find the required file {0}.".format(e.filename))
+    except grader.TestingFailureError as e:
+        __report_zero(rubric_path, "Automated testing crashed.")
 
     # Cleanup
     try:
+        os.remove(os.path.join(tests_path, file))
         for file in HW_FILES:
             os.remove(os.path.join(tests_path, file))
     except FileNotFoundError:
@@ -107,6 +110,8 @@ def main():
     # Perform action on each repository
     return_values = []
     for repo in repos:
+        if len(repo) == 0:
+            continue
         ret = fn(repo, args)
         return_values.append(ret)
 
