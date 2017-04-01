@@ -76,15 +76,14 @@ def grade(repo_name, args):
         return_score = grader.grade(argv)
     except FileNotFoundError as e:
         __report_zero(rubric_path, "I cannot find the required file {0}.".format(e.filename))
-    finally:
-        # Clean up
-        try:
-            for file in HW_FILES:
-                os.remove(os.path.join(tests_path, file))
-        except FileNotFoundError:
-            pass
-        finally:
-            return return_score
+
+    # Cleanup
+    try:
+        for file in HW_FILES:
+            os.remove(os.path.join(tests_path, file))
+    except FileNotFoundError:
+        pass
+    return return_score
 
 
 def main():
@@ -98,7 +97,8 @@ def main():
         'pull': pull,
         'grade': grade,
     }.get(args.action, None)
-    assert fn is not None, "Cannot perform action '{0}'".format(args.action)
+    if fn is None:
+        raise RuntimeError("Cannot perform action '{0}'".format(args.action))
 
     # Get the list of repositories
     with open(REPOS_LIST_FILE) as f:

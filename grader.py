@@ -67,10 +67,12 @@ def generate_report(test_result):
     for event in test_events:
         # TODO: support arbitrary test suite depth
         # Extract test metadata
-        assert len(event['labels']) == 3, 'Invalid test labels'
+        if len(event['labels']) != 3:
+            raise RuntimeError('Invalid test labels')
         test_suite = event['labels'][1]
         test_name_list = event['labels'][2].split('@')
-        assert len(test_name_list) == 2, 'Invalid test name; must include points'
+        if len(test_name_list) != 2:
+            raise RuntimeError('Invalid test name; must include points')
         test = test_name_list[0].strip()
         points = float(test_name_list[1])
         if points.is_integer():
@@ -109,7 +111,6 @@ def grade(argv):
     :param argv: list, command line arguments
     :return: int, the grade
     """
-    print(argv)
     parser = argparse.ArgumentParser(description='Set up and run Elm automated testing.')
     parser.add_argument('test_dir', help='directory containing test files and rubric')
     parser.add_argument('-d', '--dependencies', nargs='*', help='dependent module file names with extension')
