@@ -59,6 +59,17 @@ def decode_status(event):
         return False
 
 
+def intify(x):
+    """
+    Make x an integer if it is an integer
+    :param x: float
+    :return: int or float
+    """
+    if x.is_integer():
+        return int(x)
+    return x
+
+
 def generate_report(test_result, n_tests):
     """
     Generates a test report based on test result.
@@ -73,11 +84,11 @@ def generate_report(test_result, n_tests):
 
     # Initialization
     report = []
-    total = 0
-    my_total = 0
+    total = 0.0
+    my_total = 0.0
     current_suite = None
-    subtotal = 0
-    my_subtotal = 0
+    subtotal = 0.0
+    my_subtotal = 0.0
 
     # Utility functions
     def conclude_suite():
@@ -85,7 +96,7 @@ def generate_report(test_result, n_tests):
         if current_suite is not None:
             # Conclude previous test suite
             report.append('')
-            report.append("  Subtotal: {0} / {1}".format(my_subtotal, subtotal))
+            report.append("  Subtotal: {0} / {1}".format(intify(my_subtotal), intify(subtotal)))
             report.append('')
             total += subtotal
             my_total += my_subtotal
@@ -99,18 +110,16 @@ def generate_report(test_result, n_tests):
         test_suite = event['labels'][1]
         test_name_list = event['labels'][2].split('@')
         if len(test_name_list) != 2:
-            raise BrokenTestsError('Invalid test name; must include points')
+            raise BrokenTestsError("Invalid test name '{0}'; must include points".format(test_name_list[0]))
         test = test_name_list[0].strip()
-        points = float(test_name_list[1])
-        if points.is_integer():
-            points = int(points)
+        points = intify(float(test_name_list[1]))
 
         if test_suite != current_suite:
             conclude_suite()
 
             # Open new test suite
-            subtotal = 0
-            my_subtotal = 0
+            subtotal = 0.0
+            my_subtotal = 0.0
             current_suite = test_suite
             report.append("Test Suite: {0}".format(test_suite))
             report.append('')
@@ -127,7 +136,7 @@ def generate_report(test_result, n_tests):
 
     # Conclude the test report
     report_name = test_events[0]['labels'][0]
-    report = ["{0} Total Score: {1} / {2}".format(report_name, my_total, total), ''] + report
+    report = ["{0} Total Score: {1} / {2}".format(report_name, intify(my_total), intify(total)), ''] + report
     report_text = '\n'.join(report)
     return report_text, my_total
 
