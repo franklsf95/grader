@@ -65,6 +65,8 @@ def grade(repo_name, args):
         # Make sure the homework directory exists
         if not os.path.exists(hw_path):
             os.makedirs(hw_path)
+        # Delete existing report file
+        os.remove(rubric_path)
         # Copy files into the testing directory
         for file in HW_FILES:
             shutil.copy(os.path.join(hw_path, file), tests_path)
@@ -81,7 +83,6 @@ def grade(repo_name, args):
 
     # Cleanup
     try:
-        os.remove(os.path.join(tests_path, file))
         for file in HW_FILES:
             os.remove(os.path.join(tests_path, file))
     except FileNotFoundError:
