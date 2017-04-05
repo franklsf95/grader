@@ -9,3 +9,8 @@ An automated Python grader for Elm problem sets.
 3. Install Elm dependency: `cd` into `./elm-tester/`, then run `elm-test init` to install Elm dependencies. Verify by running `elm-test`.
 
 This project is in active development.
+
+### Testing
+
+- A sample run of `grader.py`: `./grader.py -v -o report.txt example`
+- 
