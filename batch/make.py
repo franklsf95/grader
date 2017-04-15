@@ -5,6 +5,7 @@ import subprocess
 from .constants import *
 
 ELM_PACKAGE_FILE = 'elm-package.json'
+ELM_STUFF_DIR = 'elm-stuff'
 OUTPUT_FILE = 'Pi.html'
 
 
@@ -15,6 +16,7 @@ def make(repo_name, args):
     :param args: dict
     :return: None
     """
+    print('> Making', repo_name)
     hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR)
 
     # Copy the elm-package.json file
@@ -30,5 +32,6 @@ def make(repo_name, args):
     # Cleanup
     try:
         os.remove(os.path.join(hw_path, ELM_PACKAGE_FILE))
+        os.rmdir(os.path.join(hw_path, ELM_STUFF_DIR))
     except FileNotFoundError:
         pass

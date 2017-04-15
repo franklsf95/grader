@@ -35,9 +35,6 @@ def grade(repo_name, args):
         if not args.force and os.path.exists(rubric_path):
             print('> Skip, graded')
             return
-        # Make sure the homework directory exists
-        if not os.path.exists(hw_path):
-            os.makedirs(hw_path)
         # Delete existing report file
         os.remove(rubric_path)
         # Copy files into the testing directory

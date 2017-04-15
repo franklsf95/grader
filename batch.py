@@ -45,6 +45,10 @@ def main():
         if type(args.limit) is int and i - args.skip >= args.limit:
             print('> Reached maximum number of repositories to process.')
             break
+        if not os.path.isdir(os.path.join(REPOS_DIR, repo, HW_DIR)):
+            print("> Repository {0} does not have homework {1}, skipping".format(repo, HW_DIR))
+            continue
+
         ret = fn(repo, args)
         return_values.append(ret)
         i += 1
