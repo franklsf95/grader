@@ -24,6 +24,7 @@ def main():
     parser.add_argument('-f', '--force', help='grade only. ignore existing grading', action='store_true')
     parser.add_argument('-n', '--limit', help='for all. limit the number of repositories to process', type=int)
     parser.add_argument('-o', '--open', help='make only. open the Elm target after making', action='store_true')
+    parser.add_argument('-s', '--skip', help='for all. skip the first SKIP repositories', type=int, default=0)
     args = parser.parse_args()
 
     # Dispatch function
@@ -38,11 +39,15 @@ def main():
     for i, repo in enumerate(summary['Repo']):
         if len(repo) == 0:
             continue
-        if type(args.limit) is int and i >= args.limit:
+        if i < args.skip:
+            print('> Skipping', repo)
+            continue
+        if type(args.limit) is int and i - args.skip >= args.limit:
             print('> Reached maximum number of repositories to process.')
             break
         ret = fn(repo, args)
         return_values.append(ret)
+        i += 1
 
     # Further actions
     if args.action == 'grade':
