@@ -4,12 +4,14 @@
 import argparse
 import pandas as pd
 from batch.make import make
+from batch.generate_rubric import generate_rubric
 from batch.grade import grade
 from batch.late_chip import calc_late_days
 from batch.pull import pull
 from batch.constants import *
 
 DISPATCH = {
+    'generate_rubric': generate_rubric,
     'grade': grade,
     'late-chip': calc_late_days,
     'make': make,
@@ -21,7 +23,7 @@ DISPATCH = {
 def main():
     parser = argparse.ArgumentParser(description='Batch operations for SVN repositories.')
     parser.add_argument('action', help='pull, grade or push')
-    parser.add_argument('-f', '--force', help='grade only. ignore existing grading', action='store_true')
+    parser.add_argument('-f', '--force', help='grade, generate_rubric only. ignore existing grading', action='store_true')
     parser.add_argument('-n', '--limit', help='for all. limit the number of repositories to process', type=int)
     parser.add_argument('-o', '--open', help='make only. open the Elm target after making', action='store_true')
     parser.add_argument('-r', '--repo', help='for all. run command on this specific repository')
@@ -55,9 +57,8 @@ def main():
             print("> Repository {0} does not have homework {1}, skipping".format(repo, HW_DIR))
             continue
 
-        ret = fn(repo, args)
+        ret = fn(repo, args, summary)
         return_values.append(ret)
-        i += 1
 
     # Further actions
     if args.action == 'grade':
@@ -68,7 +69,7 @@ def main():
 
     if args.action == 'late':
         summary[HW_DIR + "_late_chip"] = return_values
-        print('Late chips Used', return_values)
+        print('Late chips used', return_values)
         summary.to_csv(CLASS_SUMMARY, index=False)
 
 if __name__ == '__main__':

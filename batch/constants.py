@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import namedtuple
 import os
 
 BASE_DIR = '/Users/luans/cs22300/'
@@ -9,6 +10,8 @@ FILES_DIR = os.path.join(BASE_DIR, 'grader', 'files')
 REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')
 CLASS_SUMMARY = os.path.join(BASE_DIR, 'class_summary.csv')
+
+Context = namedtuple('Context', ['args', 'summary'])
 
 """
 CLASS_SUMMARY file headers:

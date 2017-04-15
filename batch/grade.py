@@ -17,11 +17,11 @@ def __report_zero(rubric_path, reason):
         f.write(text)
 
 
-def grade(repo_name, args):
+def grade(repo_name, ctx):
     """
     Grades a repository for a homework by calling the grader module.
     :param repo_name: string
-    :param args: dict
+    :param ctx: Context
     :return: int, the grade
     """
     return_score = 0
@@ -32,7 +32,7 @@ def grade(repo_name, args):
     rubric_path = os.path.join(hw_path, rubric_filename)
     try:
         # Skip if graded
-        if not args.force and os.path.exists(rubric_path):
+        if not ctx.args.force and os.path.exists(rubric_path):
             print('> Skip, graded')
             return
         # Delete existing report file
