@@ -11,7 +11,7 @@ from batch.pull import pull
 from batch.constants import *
 
 DISPATCH = {
-    'generate_rubric': generate_rubric,
+    'generate-rubric': generate_rubric,
     'grade': grade,
     'late-chip': calc_late_days,
     'make': make,
