@@ -7,7 +7,6 @@ from batch.make import make
 from batch.generate_rubric import generate_rubric
 from batch.grade import grade
 from batch.late_chip import calc_late_days
-from batch.pic_rubric import gen_pic_rubric
 from batch.pull import pull
 from batch.constants import *
 
@@ -18,7 +17,6 @@ DISPATCH = {
     'make': make,
     'pull': pull,
     'push': None,
-    'pic-rubric' : gen_pic_rubric
 }
 
 
@@ -61,7 +59,7 @@ def main():
                 return_values.append(0)
             continue
 
-        ret = fn(repo, args, summary)
+        ret = fn(repo, Context(args, summary))
         return_values.append(ret)
 
     # Further actions
