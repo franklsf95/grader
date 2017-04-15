@@ -3,6 +3,8 @@
 import subprocess
 from .constants import *
 
+REPO_URL_PREFIX = 'https://phoenixforge.cs.uchicago.edu/svn/'
+
 
 def pull(repo_name, _):
     """

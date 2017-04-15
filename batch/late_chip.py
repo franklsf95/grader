@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 import math
 import re
 import subprocess
 from .constants import *
+
+DEADLINE = datetime.strptime('2017-04-10 12:00:00', '%Y-%m-%d %H:%M:%S')
 
 
 def calc_late_days(repo_name, _):
@@ -17,7 +20,7 @@ def calc_late_days(repo_name, _):
     for hw_file in HW_FILES:
         hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR, hw_file)
 
-        # Extract the date time from each file in a hw repo and find the oldest time
+        # Extract the date time from each file in a homework repo and find the oldest time
         try:
             commit_info = str(subprocess.check_output(["svn", "info", hw_path]), 'utf-8')
             commit_datetime = get_commit_datetime(commit_info)

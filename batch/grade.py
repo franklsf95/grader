@@ -21,7 +21,7 @@ def grade(repo_name, args):
     """
     Grades a repository for a homework by calling the grader module.
     :param repo_name: string
-    :param args: arguments for grading
+    :param args: dict
     :return: int, the grade
     """
     return_score = 0
