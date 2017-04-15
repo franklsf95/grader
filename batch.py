@@ -6,6 +6,7 @@ import pandas as pd
 from batch.make import make
 from batch.grade import grade
 from batch.late_chip import calc_late_days
+from batch.pic_rubric import gen_pic_rubric
 from batch.pull import pull
 from batch.constants import *
 
@@ -15,6 +16,7 @@ DISPATCH = {
     'make': make,
     'pull': pull,
     'push': None,
+    'pic-rubric' : gen_pic_rubric
 }
 
 
@@ -52,7 +54,9 @@ def main():
             print('> Reached maximum number of repositories to process.')
             break
         if not os.path.isdir(os.path.join(REPOS_DIR, repo, HW_DIR)):
-            print("> Repository {0} does not have homework {1}, skipping".format(repo, HW_DIR))
+            print("> Repository {0} does not have homework {1}, skipping".format(os.path.join(REPOS_DIR, repo, HW_DIR), HW_DIR))
+            if args.action == 'late-chip':
+                return_values.append(0)
             continue
 
         ret = fn(repo, args)
@@ -66,10 +70,12 @@ def main():
         print(len(return_values))
         print(float(sum(return_values)) / len(return_values))
 
-    if args.action == 'late':
+    if args.action == 'late-chip':
         summary[HW_DIR + "_late_chip"] = return_values
         print('Late chips Used', return_values)
         summary.to_csv(CLASS_SUMMARY, index=False)
+
+
 
 if __name__ == '__main__':
     main()
