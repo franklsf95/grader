@@ -24,6 +24,7 @@ def main():
     parser.add_argument('-f', '--force', help='grade only. ignore existing grading', action='store_true')
     parser.add_argument('-n', '--limit', help='for all. limit the number of repositories to process', type=int)
     parser.add_argument('-o', '--open', help='make only. open the Elm target after making', action='store_true')
+    parser.add_argument('-r', '--repo', help='for all. run command on this specific repository')
     parser.add_argument('-s', '--skip', help='for all. skip the first SKIP repositories', type=int, default=0)
     args = parser.parse_args()
 
@@ -31,6 +32,11 @@ def main():
     fn = DISPATCH.get(args.action, None)
     if fn is None:
         raise RuntimeError("> Cannot perform action '{0}'".format(args.action))
+
+    # If args.repo is set, run once and exit
+    if args.repo is not None:
+        fn(args.repo, args)
+        exit()
 
     # Read CSV for repositories
     summary = pd.read_csv(CLASS_SUMMARY)

@@ -32,6 +32,6 @@ def make(repo_name, args):
     # Cleanup
     try:
         os.remove(os.path.join(hw_path, ELM_PACKAGE_FILE))
-        os.rmdir(os.path.join(hw_path, ELM_STUFF_DIR))
+        shutil.rmtree(os.path.join(hw_path, ELM_STUFF_DIR))
     except FileNotFoundError:
         pass
