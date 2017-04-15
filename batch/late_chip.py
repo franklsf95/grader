@@ -13,7 +13,6 @@ def calc_late_days(repo_name, _):
     """
     Calculates the number of late chips used by one student for 1 assignment
     :param repo_name: string
-    :param hw_num: int
     :return: int, number of late chips
     """
     oldest_datetime = datetime.utcfromtimestamp(0)
@@ -38,7 +37,7 @@ def get_commit_datetime(commit_info):
     """
     Gets the datetime given a repo and a file
     :param commit_info: string
-    :return: datetime obj, commited date
+    :return: datetime obj, committed date
     """
     # Extract the date time and convert to a date time object
     commit_info = re.findall('Last Changed Date:(.*)', commit_info)[0].split(" ")[1:3]

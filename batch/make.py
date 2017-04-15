@@ -9,11 +9,11 @@ ELM_STUFF_DIR = 'elm-stuff'
 OUTPUT_FILE = 'Pi.html'
 
 
-def make(repo_name, args):
+def make(repo_name, ctx):
     """
     Call elm-build each repository.
     :param repo_name: string
-    :param args: dict
+    :param ctx: Context
     :return: None
     """
     print('> Making', repo_name)
@@ -26,7 +26,7 @@ def make(repo_name, args):
     ret = subprocess.call(['elm-make', '--yes'] + HW_FILES + ['--output', OUTPUT_FILE], cwd=hw_path)
 
     # Open
-    if ret == 0 and args.open:
+    if ret == 0 and ctx.args.open:
         subprocess.call(['open', OUTPUT_FILE], cwd=hw_path)
 
     # Cleanup

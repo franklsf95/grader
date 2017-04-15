@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from collections import namedtuple
 import os
 
 BASE_DIR = '/Users/kevinzen/Repos/Grading/'
@@ -10,6 +11,8 @@ REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')
 CLASS_SUMMARY = os.path.join(BASE_DIR, 'class_summary.csv')
 MAX_SCORE = 80
+
+Context = namedtuple('Context', ['args', 'summary'])
 
 """
 CLASS_SUMMARY file headers:
