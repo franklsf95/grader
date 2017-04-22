@@ -5,7 +5,7 @@ import os
 
 BASE_DIR = '/Users/luans/cs22300/'
 HW_DIR = 'hw2'
-HW_FILES = ['Pi.elm', 'pi.elm', 'ThumbPi.png', 'ThumbPi.jpg']
+HW_FILES = ['Pi.elm']
 FILES_DIR = os.path.join(BASE_DIR, 'grader', 'files')
 REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')

@@ -8,6 +8,7 @@ from batch.generate_rubric import generate_rubric
 from batch.grade import grade
 from batch.late_chip import calc_late_days
 from batch.pull import pull
+from batch.push import push
 from batch.constants import *
 
 DISPATCH = {
@@ -16,7 +17,7 @@ DISPATCH = {
     'late-chip': calc_late_days,
     'make': make,
     'pull': pull,
-    'push': None,
+    'push': push,
 }
 
 
@@ -37,7 +38,7 @@ def main():
 
     # If args.repo is set, run once and exit
     if args.repo is not None:
-        fn(args.repo, args)
+        fn(args.repo, Context(args, None))
         exit()
 
     # Read CSV for repositories
@@ -73,7 +74,6 @@ def main():
         summary[HW_DIR + "_late_chip"] = return_values
         print('Late chips used', return_values)
         summary.to_csv(CLASS_SUMMARY, index=False)
-
 
 
 if __name__ == '__main__':
