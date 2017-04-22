@@ -19,6 +19,13 @@ def make(repo_name, ctx):
     print('> Making', repo_name)
     hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR)
 
+    # Cleanup
+    try:
+        os.remove(os.path.join(hw_path, ELM_PACKAGE_FILE))
+        shutil.rmtree(os.path.join(hw_path, ELM_STUFF_DIR))
+    except FileNotFoundError:
+        pass
+
     # Copy the elm-package.json file
     shutil.copy(os.path.join(FILES_DIR, ELM_PACKAGE_FILE), hw_path)
 
