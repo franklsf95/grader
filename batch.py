@@ -3,27 +3,31 @@
 
 import argparse
 import pandas as pd
-from batch.make import make
+from batch.collect import collect
+from batch.constants import *
+from batch.late_chip import calc_late_days
 from batch.generate_rubric import generate_rubric
 from batch.grade import grade
-from batch.late_chip import calc_late_days
+from batch.make import make
 from batch.pull import pull
-from batch.constants import *
+from batch.push import push
 
 DISPATCH = {
+    'collect': collect,
     'generate-rubric': generate_rubric,
     'grade': grade,
     'late-chip': calc_late_days,
     'make': make,
     'pull': pull,
-    'push': None,
+    'push': push,
 }
 
 
 def main():
     parser = argparse.ArgumentParser(description='Batch operations for SVN repositories.')
     parser.add_argument('action', help='pull, grade or push')
-    parser.add_argument('-f', '--force', help='grade, generate_rubric only. ignore existing grading', action='store_true')
+    parser.add_argument('-f', '--force', help='grade, generate_rubric only. ignore existing grading',
+                        action='store_true')
     parser.add_argument('-n', '--limit', help='for all. limit the number of repositories to process', type=int)
     parser.add_argument('-o', '--open', help='make only. open the Elm target after making', action='store_true')
     parser.add_argument('-r', '--repo', help='for all. run command on this specific repository')
@@ -37,12 +41,14 @@ def main():
 
     # If args.repo is set, run once and exit
     if args.repo is not None:
-        fn(args.repo, args)
+        fn(args.repo, Context(args, None, None))
         exit()
 
     # Read CSV for repositories
     summary = pd.read_csv(CLASS_SUMMARY)
 
+    # Context can be modified
+    ctx = Context(args, summary, ALIAS_POOL)
     return_values = []
     for i, repo in enumerate(summary['Repo']):
         if len(repo) == 0:
@@ -59,9 +65,10 @@ def main():
                 return_values.append(0)
             continue
 
-        ret = fn(repo, Context(args, summary))
+        ret = fn(repo, ctx)
         return_values.append(ret)
 
+    print(return_values)
     # Further actions
     if args.action == 'grade':
         print (return_values)
@@ -69,13 +76,12 @@ def main():
         summary.to_csv(CLASS_SUMMARY, index=False)
         print(len(return_values))
         print(float(sum(return_values)) / len(return_values))
-
-    if args.action == 'late-chip':
-        summary[HW_DIR + "_late_chip"] = return_values
-        print('Late chips used', return_values)
+    elif args.action == 'late-chip':
+        summary[HW_DIR + '_late_chip'] = return_values
         summary.to_csv(CLASS_SUMMARY, index=False)
-
-
+    elif args.action == 'collect':
+        summary[HW_DIR + '_alias'] = return_values
+        summary.to_csv(CLASS_SUMMARY, index=False)
 
 if __name__ == '__main__':
     main()
