@@ -55,7 +55,7 @@ def main():
             break
         if not os.path.isdir(os.path.join(REPOS_DIR, repo, HW_DIR)):
             print("> Repository {0} does not have homework {1}, skipping".format(os.path.join(REPOS_DIR, repo, HW_DIR), HW_DIR))
-            if args.action == 'late-chip':
+            if args.action == 'late-chip' or args.action == 'grader':
                 return_values.append(0)
             continue
 
@@ -64,6 +64,7 @@ def main():
 
     # Further actions
     if args.action == 'grade':
+        print (return_values)
         summary[HW_DIR] = return_values
         summary.to_csv(CLASS_SUMMARY, index=False)
         print(len(return_values))

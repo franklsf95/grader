@@ -6,10 +6,12 @@ import os
 import shutil
 import subprocess
 import sys
+from batch.constants import *
 
 ELM_TESTER_DIR = './elm-tester'
 TEMPLATE_FILENAME = 'report_template.txt'
 TESTS_FILENAME = 'Tests.elm'
+BASH_SCRIPT = './raw_results.sh'
 
 
 class BrokenTestsError(Exception):
@@ -20,18 +22,32 @@ class TestingFailureError(Exception):
     pass
 
 
-def decode_result(result_raw):
+# def decode_result(result_raw):
+#     """
+#     Parses the testing result into a Python object.
+#     :param result_raw: bytes, raw output from Elm
+#     :return: a list of dictionaries
+#     """
+#     result_str = result_raw.stdout.decode('utf-8')
+#     lines = result_str.split('\n')
+#     result = []
+#     for line in lines:
+#         print(line)
+#         if len(line) > 0:
+#             result.append(json.loads(line))
+def decode_result():
     """
     Parses the testing result into a Python object.
     :param result_raw: bytes, raw output from Elm
     :return: a list of dictionaries
     """
-    result_str = result_raw.stdout.decode('utf-8')
-    lines = result_str.split('\n')
     result = []
-    for line in lines:
-        if len(line) > 0:
-            result.append(json.loads(line))
+    with open(os.path.join(ELM_TESTER_DIR,'raw_results.txt'), 'r') as f:
+        for line in f:
+            if len(line) > 0:
+                result.append(json.loads(line))
+            # print(line)
+    os.remove(os.path.join(ELM_TESTER_DIR,'raw_results.txt'))
     return result
 
 
@@ -78,9 +94,12 @@ def generate_report(test_result, n_tests):
     :return: (string, int), (report text, points)
     """
     # Pre-processing
+
     test_events = list(filter(lambda e: e['event'] == 'testCompleted', test_result))
-    if len(test_events) != n_tests:
-        raise TestingFailureError("Wrong number of test results; expecting {0}, got {1}".format(n_tests, len(test_events)))
+
+    # We map some tests, count_tests therefore doesn't work, ignore this line
+    # if len(test_events) != n_tests:
+    #     raise TestingFailureError("Wrong number of test results; expecting {0}, got {1}".format(n_tests, len(test_events)))
 
     # Initialization
     report = []
@@ -157,14 +176,25 @@ def grade(argv):
     if args.verbose:
         print("Preparing to run test suite '{0}'...".format(args.test_dir))
     shutil.copy(os.path.join(args.test_dir, TESTS_FILENAME), os.path.join(ELM_TESTER_DIR, 'tests'))
+    
     if args.dependencies is not None:
         for dep_filename in args.dependencies:
             shutil.copy(os.path.join(args.test_dir, dep_filename), os.path.join(ELM_TESTER_DIR, 'tests'))
 
     if args.verbose:
         print('Running tests...', end='')
-    result_raw = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stdout=subprocess.PIPE)
-    result_json = decode_result(result_raw)
+
+    # subprocess.run is cutting off theh outputs for some reason, call is older but works
+    # I can't figure out to get this to work so I put this command into a bash file and will call 
+    # that file through subprocess
+
+    # result_raw = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stderr=subprocess.STDOUT, shell=True)
+
+    subprocess.run(['./run_tests.sh'],cwd=ELM_TESTER_DIR)
+
+    # HERE MODIFIED
+    result_json = decode_result()
+
     if args.verbose:
         print(' done.')
 

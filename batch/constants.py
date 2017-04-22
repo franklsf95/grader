@@ -3,9 +3,9 @@
 from collections import namedtuple
 import os
 
-BASE_DIR = '/Users/luans/cs22300/'
-HW_DIR = 'hw2'
-HW_FILES = ['Pi.elm', 'pi.elm', 'ThumbPi.png', 'ThumbPi.jpg']
+BASE_DIR = '/Users/kevinzen/Repos/Grading'
+HW_DIR = 'hw3'
+HW_FILES = ['ListsAndTrees.elm']
 FILES_DIR = os.path.join(BASE_DIR, 'grader', 'files')
 REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')

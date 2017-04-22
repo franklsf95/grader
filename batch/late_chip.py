@@ -6,7 +6,7 @@ import re
 import subprocess
 from .constants import *
 
-DEADLINE = datetime.strptime('2017-04-10 12:00:00', '%Y-%m-%d %H:%M:%S')
+DEADLINE = datetime.strptime('2017-04-17 12:00:00', '%Y-%m-%d %H:%M:%S')
 
 
 def calc_late_days(repo_name, _):
