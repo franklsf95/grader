@@ -47,6 +47,7 @@ def decode_result():
             if len(line) > 0:
                 result.append(json.loads(line))
             # print(line)
+    print(result[len(result)-1])
     os.remove(os.path.join(ELM_TESTER_DIR,'raw_results.txt'))
     return result
 
@@ -190,39 +191,45 @@ def grade(argv):
 
     # result_raw = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stderr=subprocess.STDOUT, shell=True)
 
-    subprocess.run(['./run_tests.sh'],cwd=ELM_TESTER_DIR)
-
-    # HERE MODIFIED
-    result_json = decode_result()
-
-    if args.verbose:
-        print(' done.')
-
-    if args.verbose:
-        print('Analyzing tests...')
-    n_tests = count_tests(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
-
-    if args.verbose:
-        print('Generating report...')
-
     try:
-        report, score = generate_report(result_json, n_tests)
-    finally:
+        subprocess.run(['./run_tests.sh'],cwd=ELM_TESTER_DIR)
+    
+
+
+        # HERE MODIFIED
+        result_json = decode_result()
+
         if args.verbose:
-            print('Cleaning up...')
-        os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
-        if args.dependencies is not None:
-            for dep_filename in args.dependencies:
-                os.remove(os.path.join(ELM_TESTER_DIR, 'tests', dep_filename))
+            print(' done.')
 
-    if args.output is not None:
-        with open(args.output, 'w') as f:
-            print(report, file=f)
-    else:
-        print(report)
+        if args.verbose:
+            print('Analyzing tests...')
+        n_tests = count_tests(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
 
-    return score
+        if args.verbose:
+            print('Generating report...')
 
+        try:
+            report, score = generate_report(result_json, n_tests)
+        finally:
+            if args.verbose:
+                print('Cleaning up...')
+            os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
+            if args.dependencies is not None:
+                for dep_filename in args.dependencies:
+                    os.remove(os.path.join(ELM_TESTER_DIR, 'tests', dep_filename))
+
+        if args.output is not None:
+            with open(args.output, 'w') as f:
+                print(report, file=f)
+        else:
+            print(report)
+
+        return score
+
+    except:
+        print("Can't compile code for :" + ELM_TESTER_DIR)
+        return 0.0
 
 def main():
     grade(sys.argv[1:])
