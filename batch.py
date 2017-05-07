@@ -3,6 +3,7 @@
 
 import argparse
 import pandas as pd
+import shutil
 from batch.collect import collect
 from batch.constants import *
 from batch.late_chip import calc_late_days
@@ -50,6 +51,12 @@ def main():
     # Context can be modified
     ctx = Context(args, summary, ALIAS_POOL)
     return_values = []
+    
+    # Copy the solutions into elm-tester directory
+    if args.action == 'grade':
+        for solution in SOLUTION_FILES:
+            shutil.copy(os.path.join(TESTS_DIR, HW_DIR,'solution', solution), os.path.join(ELM_TESTER_DIR, 'tests'))
+
     for i, repo in enumerate(summary['Repo']):
         if len(repo) == 0:
             continue

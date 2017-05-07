@@ -8,12 +8,6 @@ import subprocess
 import sys
 from batch.constants import *
 
-ELM_TESTER_DIR = './elm-tester'
-TEMPLATE_FILENAME = 'report_template.txt'
-TESTS_FILENAME = 'Tests.elm'
-BASH_SCRIPT = './raw_results.sh'
-
-
 class BrokenTestsError(Exception):
     pass
 
