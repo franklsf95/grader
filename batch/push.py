@@ -19,5 +19,5 @@ def push(repo_name, _):
         return
 
     print('> Pushing', repo_name)
-    subprocess.call(['svn', 'add', "{}.rubric.txt".format(HW_DIR)], cwd=hw_path)
+    subprocess.call(['svn', 'add', "{}.rubric.txt".format(HW_IDENTIFIER)], cwd=hw_path)
     subprocess.call(['svn', 'ci', '-m', '"Graded {}"'.format(HW_DIR)], cwd=hw_path)
