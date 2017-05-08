@@ -14,12 +14,12 @@ FILES_DIR = os.path.join(BASE_DIR, 'grader', 'files')
 REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')
 #CLASS_SUMMARY = os.path.join(BASE_DIR, 'class_one.csv')
-CLASS_SUMMARY = os.path.join(BASE_DIR, 'cs223-spr-17-admin' 'class_summary.csv')
+CLASS_SUMMARY = os.path.join(BASE_DIR, 'cs223-spr-17-admin', 'class_summary.csv')
 ELM_TESTER_DIR = './elm-tester'
 TEMPLATE_FILENAME = 'report_template.txt'
-TESTS_FILENAME = 'ExplicitMin_test.elm'
+TESTS_FILENAME = 'BHeaps_test.elm'
 BASH_SCRIPT = './raw_results.sh'
-RUBRIC_FILENAME = "{0}.rubric.txt".format(HW_DIR + '_ExplicitMin')
+RUBRIC_FILENAME = "{0}.rubric.txt".format(HW_DIR + '_LHeaps')
 DEADLINE = datetime.strptime('2017-04-24 12:00:00', '%Y-%m-%d %H:%M:%S')
 
 

@@ -28,8 +28,7 @@ def grade(repo_name, ctx):
     print('> Grading', repo_name, HW_DIR)
     hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR)
     tests_path = os.path.join(TESTS_DIR, HW_DIR)
-    rubric_filename = "{0}.rubric.txt".format(HW_DIR)
-    rubric_path = os.path.join(hw_path, rubric_filename)
+    rubric_path = os.path.join(hw_path, RUBRIC_FILENAME)
     try:
         # Skip if graded
         if not ctx.args.force and os.path.exists(rubric_path):
