@@ -38,7 +38,7 @@ def main():
     # Dispatch function
     fn = DISPATCH.get(args.action, None)
     if fn is None:
-        raise RuntimeError("> Cannot perform action '{0}'".format(args.action))
+        raise RuntimeError("> Don't know how to '{0}'".format(args.action))
 
     # If args.repo is set, run once and exit
     if args.repo is not None:
@@ -66,7 +66,7 @@ def main():
         if type(args.limit) is int and i - args.skip >= args.limit:
             print('> Reached maximum number of repositories to process.')
             break
-        if not os.path.isdir(os.path.join(REPOS_DIR, repo, HW_DIR)):
+        if fn is not pull and not os.path.isdir(os.path.join(REPOS_DIR, repo, HW_DIR)):
             print("> Repository {0} does not have homework {1}, skipping".format(os.path.join(REPOS_DIR, repo, HW_DIR), HW_DIR))
             if args.action == 'late-chip' or args.action == 'grader':
                 return_values.append(0)

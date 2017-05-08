@@ -7,16 +7,18 @@ from .context import Context
 
 BASE_DIR = '/Users/kevinzen/Repos/Grading'
 HW_DIR = 'hw4'
+HW_IDENTIFIER = HW_DIR.replace('/', '.')
 HW_FILES = ['THeaps.elm','LHeaps.elm','BHeaps.elm','ExplicitMin.elm']
 SOLUTION_FILES = ['THeaps_ref.elm','LHeaps_ref.elm','BHeaps_ref.elm','ExplicitMin_ref.elm']
 FILES_DIR = os.path.join(BASE_DIR, 'grader', 'files')
 REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')
-CLASS_SUMMARY = os.path.join(BASE_DIR, 'cs223-spr-17-admin/class_summary.csv')
 #CLASS_SUMMARY = os.path.join(BASE_DIR, 'class_one.csv')
+CLASS_SUMMARY = os.path.join(BASE_DIR, 'cs223-spr-17-admin' 'class_summary.csv')
 ELM_TESTER_DIR = './elm-tester'
 TEMPLATE_FILENAME = 'report_template.txt'
 TESTS_FILENAME = 'ExplicitMin_test.elm'
+BASH_SCRIPT = './raw_results.sh'
 RUBRIC_FILENAME = "{0}.rubric.txt".format(HW_DIR + '_ExplicitMin')
 DEADLINE = datetime.strptime('2017-04-24 12:00:00', '%Y-%m-%d %H:%M:%S')
 

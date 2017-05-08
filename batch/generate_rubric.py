@@ -7,7 +7,7 @@ import math
 REASON_HEADER = HW_DIR + "_reason"
 GOOD_COMMENT = 'Good Job!'
 NO_FILE_COMMENT = 'I did not find your file.'
-HW_FULL_SCORE = 80
+HW_FULL_SCORE = 10
 
 
 def generate_rubric(repo_name, ctx):
@@ -16,7 +16,7 @@ def generate_rubric(repo_name, ctx):
     And adds it to each repository as a file in the format of hw1.rubric.txt
     """
     hw_path = os.path.join(REPOS_DIR, repo_name, HW_DIR)
-    rubric_filename = "{0}.rubric.txt".format(HW_DIR)
+    rubric_filename = "{0}.rubric.txt".format(HW_IDENTIFIER)
     rubric_path = os.path.join(hw_path, rubric_filename)
     summary = ctx.summary
     reason = list(summary[summary['Repo'] == repo_name][REASON_HEADER])[0]
@@ -38,4 +38,4 @@ def generate_rubric(repo_name, ctx):
 
 
 def __format_score(score, full_score):
-    return "Homework 2 Total Score: {} / {}\n\nComment: ".format(int(score), full_score)
+    return "Project Planning Total Score: {} / {}\n\nComment: ".format(int(score), full_score)
