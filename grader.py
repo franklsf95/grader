@@ -188,8 +188,6 @@ def grade(argv):
     try:
         subprocess.run(['./run_tests.sh'],cwd=ELM_TESTER_DIR)
     
-
-
         # HERE MODIFIED
         result_json = decode_result()
 
