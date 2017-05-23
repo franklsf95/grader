@@ -5,7 +5,7 @@ from datetime import datetime
 import math
 from .context import Context
 
-BASE_DIR = '/Users/kevinzen/Repos/Grading'
+BASE_DIR = '/Users/luans/cs22300/'
 HW_DIR = 'hw4'
 HW_IDENTIFIER = HW_DIR.replace('/', '.')
 HW_FILES = ['THeaps.elm','LHeaps.elm','BHeaps.elm','ExplicitMin.elm']
@@ -13,7 +13,6 @@ SOLUTION_FILES = ['THeaps_ref.elm','LHeaps_ref.elm','BHeaps_ref.elm','ExplicitMi
 FILES_DIR = os.path.join(BASE_DIR, 'grader', 'files')
 REPOS_DIR = os.path.join(BASE_DIR, 'repositories/')
 TESTS_DIR = os.path.join(BASE_DIR, 'cs22300-sp17/tests/')
-#CLASS_SUMMARY = os.path.join(BASE_DIR, 'class_one.csv')
 CLASS_SUMMARY = os.path.join(BASE_DIR, 'cs223-spr-17-admin', 'class_summary.csv')
 ELM_TESTER_DIR = './elm-tester'
 TEMPLATE_FILENAME = 'report_template.txt'

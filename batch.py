@@ -5,6 +5,7 @@ import argparse
 import pandas as pd
 import shutil
 from batch.collect import collect
+from batch.collect_votes import collect_votes
 from batch.constants import *
 from batch.late_chip import calc_late_days
 from batch.generate_rubric import generate_rubric
@@ -15,6 +16,7 @@ from batch.push import push
 
 DISPATCH = {
     'collect': collect,
+    'collect-votes': collect_votes,
     'generate-rubric': generate_rubric,
     'grade': grade,
     'late-chip': calc_late_days,
@@ -80,15 +82,15 @@ def main():
     if args.action == 'grade':
         print (return_values)
         summary[HW_DIR] = return_values
-        summary.to_csv(CLASS_SUMMARY, index=False)
         print(len(return_values))
         print(float(sum(return_values)) / len(return_values))
     elif args.action == 'late-chip':
         summary[HW_DIR + '_late_chip'] = return_values
-        summary.to_csv(CLASS_SUMMARY, index=False)
     elif args.action == 'collect':
         summary[HW_DIR + '_alias'] = return_values
-        summary.to_csv(CLASS_SUMMARY, index=False)
+
+    # Write CSV
+    summary.to_csv(CLASS_SUMMARY, index=False)
 
 if __name__ == '__main__':
     main()
