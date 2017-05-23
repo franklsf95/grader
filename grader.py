@@ -2,11 +2,11 @@
 
 import argparse
 import json
-import os
 import shutil
 import subprocess
 import sys
 from batch.constants import *
+
 
 class BrokenTestsError(Exception):
     pass
@@ -40,8 +40,6 @@ def decode_result():
         for line in f:
             if len(line) > 0:
                 result.append(json.loads(line))
-            # print(line)
-    print(result[len(result)-1])
     os.remove(os.path.join(ELM_TESTER_DIR,'raw_results.txt'))
     return result
 
@@ -162,7 +160,7 @@ def grade(argv):
     :return: int, the grade
     """
     parser = argparse.ArgumentParser(description='Set up and run Elm automated testing.')
-    parser.add_argument('test_dir', help='directory containing test files and rubric')
+    parser.add_argument('test_dir', help='directory containing test files')
     parser.add_argument('-d', '--dependencies', nargs='*', help='dependent module file names with extension')
     parser.add_argument('-o', '--output', help='output file, default to stdout')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
@@ -174,7 +172,17 @@ def grade(argv):
     
     if args.dependencies is not None:
         for dep_filename in args.dependencies:
+            # TODO: make it an option
+            # Expose all functions in Elm
             shutil.copy(os.path.join(args.test_dir, dep_filename), os.path.join(ELM_TESTER_DIR, 'tests'))
+            file = os.path.join(ELM_TESTER_DIR, 'tests', dep_filename)
+            with open(file) as f:
+                lines = f.readlines()
+                lines[0] = "module {} exposing (..)".format(dep_filename[:-4])
+            with open(file, 'w') as f:
+                for line in lines:
+                    f.write(line)
+
 
     if args.verbose:
         print('Running tests...', end='')
@@ -186,11 +194,9 @@ def grade(argv):
     # result_raw = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stderr=subprocess.STDOUT, shell=True)
 
     try:
-        subprocess.run(['./run_tests.sh'],cwd=ELM_TESTER_DIR)
-    
-        # HERE MODIFIED
-        result_json = decode_result()
+        subprocess.run(['./run_tests.sh'], cwd=ELM_TESTER_DIR)
 
+        result_json = decode_result()
         if args.verbose:
             print(' done.')
 
@@ -212,6 +218,7 @@ def grade(argv):
                     os.remove(os.path.join(ELM_TESTER_DIR, 'tests', dep_filename))
 
         if args.output is not None:
+            print(args.output)
             with open(args.output, 'w') as f:
                 print(report, file=f)
         else:
@@ -219,9 +226,10 @@ def grade(argv):
 
         return score
 
-    except:
+    except RuntimeError:
         print("Can't compile code for :" + ELM_TESTER_DIR)
-        return 0.0
+        return 0
+
 
 def main():
     grade(sys.argv[1:])

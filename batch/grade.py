@@ -35,7 +35,8 @@ def grade(repo_name, ctx):
             print('> Skip, graded')
             return
         # Delete existing report file
-        os.remove(rubric_path)
+        if os.path.exists(rubric_path):
+            os.remove(rubric_path)
         # Copy files into the testing directory
         for file in HW_FILES:
             shutil.copy(os.path.join(hw_path, file), tests_path)
@@ -56,4 +57,5 @@ def grade(repo_name, ctx):
             os.remove(os.path.join(tests_path, file))
     except FileNotFoundError:
         pass
+
     return return_score

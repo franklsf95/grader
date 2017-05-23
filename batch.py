@@ -78,9 +78,12 @@ def main():
         return_values.append(ret)
 
     print(return_values)
+
+    if args.limit is not None or args.skip is not None:
+        exit()
+
     # Further actions
     if args.action == 'grade':
-        print (return_values)
         summary[HW_DIR] = return_values
         print(len(return_values))
         print(float(sum(return_values)) / len(return_values))
