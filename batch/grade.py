@@ -41,7 +41,7 @@ def grade(repo_name, ctx):
         for file in HW_FILES:
             shutil.copy(os.path.join(hw_path, file), tests_path)
         # Run grader
-        argv = ['-v', tests_path, '-o', rubric_path]
+        argv = [tests_path, '-v', '-e', '-o', rubric_path]
         if len(HW_FILES) > 0:
             argv.append('-d')
             argv.extend(HW_FILES)

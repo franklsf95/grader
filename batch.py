@@ -70,8 +70,7 @@ def main():
             break
         if fn is not pull and not os.path.isdir(os.path.join(REPOS_DIR, repo, HW_DIR)):
             print("> Repository {0} does not have homework {1}, skipping".format(os.path.join(REPOS_DIR, repo, HW_DIR), HW_DIR))
-            if args.action == 'late-chip' or args.action == 'grader':
-                return_values.append(0)
+            return_values.append(-1)
             continue
 
         ret = fn(repo, ctx)
@@ -79,7 +78,7 @@ def main():
 
     print(return_values)
 
-    if args.limit is not None or args.skip is not None:
+    if args.limit is not None or args.skip > 0:
         exit()
 
     # Further actions
