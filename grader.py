@@ -163,6 +163,7 @@ def grade(argv):
     parser.add_argument('test_dir', help='directory containing test files')
     parser.add_argument('-d', '--dependencies', nargs='*', help='dependent module file names with extension')
     parser.add_argument('-o', '--output', help='output file, default to stdout')
+    parser.add_argument('-e', '--expose', action='store_true', help='force module files to expose everything')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
     args = parser.parse_args(args=argv)
 
@@ -178,11 +179,13 @@ def grade(argv):
             file = os.path.join(ELM_TESTER_DIR, 'tests', dep_filename)
             with open(file) as f:
                 lines = f.readlines()
-                lines[0] = "module {} exposing (..)".format(dep_filename[:-4])
+                for i, line in enumerate(lines):
+                    if line.startswith('module '):
+                        lines[i] = "module {} exposing (..)".format(dep_filename[:-4])
+                        break
             with open(file, 'w') as f:
                 for line in lines:
                     f.write(line)
-
 
     if args.verbose:
         print('Running tests...', end='')
@@ -190,8 +193,6 @@ def grade(argv):
     # subprocess.run is cutting off theh outputs for some reason, call is older but works
     # I can't figure out to get this to work so I put this command into a bash file and will call 
     # that file through subprocess
-
-    # result_raw = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stderr=subprocess.STDOUT, shell=True)
 
     try:
         subprocess.run(['./run_tests.sh'], cwd=ELM_TESTER_DIR)
@@ -223,11 +224,10 @@ def grade(argv):
                 print(report, file=f)
         else:
             print(report)
-
         return score
 
-    except RuntimeError:
-        print("Can't compile code for :" + ELM_TESTER_DIR)
+    except IndexError:
+        print("Test result incomplete")
         return 0
 
 
