@@ -37,25 +37,16 @@ def grade(repo_name, ctx):
         # Delete existing report file
         if os.path.exists(rubric_path):
             os.remove(rubric_path)
-        # Copy files into the testing directory
-        for file in HW_FILES:
-            shutil.copy(os.path.join(hw_path, file), tests_path)
         # Run grader
         argv = [tests_path, '-v', '-e', '-o', rubric_path]
         if len(HW_FILES) > 0:
             argv.append('-d')
-            argv.extend(HW_FILES)
+        for file in HW_FILES:
+            argv.append(os.path.join(hw_path, file))
         return_score = grader.grade(argv)
     except FileNotFoundError as e:
         __report_zero(rubric_path, "I cannot find the required file {0}.".format(e.filename))
     except grader.TestingFailureError as e:
         __report_zero(rubric_path, "Automated testing crashed.")
-
-    # Cleanup
-    try:
-        for file in HW_FILES:
-            os.remove(os.path.join(tests_path, file))
-    except FileNotFoundError:
-        pass
 
     return return_score

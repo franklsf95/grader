@@ -7,6 +7,8 @@ import subprocess
 import sys
 from batch.constants import *
 
+ELM_CACHE_PATH = os.path.join(ELM_TESTER_DIR, 'tests/elm-stuff/build-artifacts/0.18.0/user')
+
 
 class BrokenTestsError(Exception):
     pass
@@ -89,7 +91,7 @@ def generate_report(test_result, n_tests):
 
     # Utility functions
     def conclude_suite():
-        nonlocal total, my_total, current_suite, subtotal, my_subtotal
+        nonlocal report, total, my_total, current_suite, subtotal, my_subtotal
         if current_suite is not None:
             # Conclude previous test suite
             report.append('')
@@ -146,7 +148,7 @@ def grade(argv):
     """
     parser = argparse.ArgumentParser(description='Set up and run Elm automated testing.')
     parser.add_argument('test_dir', help='directory containing test files')
-    parser.add_argument('-d', '--dependencies', nargs='*', help='dependent module file names with extension')
+    parser.add_argument('-d', '--dependencies', nargs='*', help='dependent module file paths')
     parser.add_argument('-o', '--output', help='output file, default to stdout')
     parser.add_argument('-e', '--expose', action='store_true', help='force module files to expose everything')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
@@ -154,28 +156,34 @@ def grade(argv):
 
     if args.verbose:
         print("Preparing to run test suite '{0}'...".format(args.test_dir))
+
+    if os.path.exists(ELM_CACHE_PATH):
+        shutil.rmtree(ELM_CACHE_PATH)
     shutil.copy(os.path.join(args.test_dir, TESTS_FILENAME), os.path.join(ELM_TESTER_DIR, 'tests'))
-    
+
+    copied_dependencies_path = []
     if args.dependencies is not None:
-        for dep_filename in args.dependencies:
-            # TODO: make it an option
-            # Expose all functions in Elm
-            shutil.copy(os.path.join(args.test_dir, dep_filename), os.path.join(ELM_TESTER_DIR, 'tests'))
-            file = os.path.join(ELM_TESTER_DIR, 'tests', dep_filename)
-            with open(file) as f:
-                lines = f.readlines()
-                for i, line in enumerate(lines):
-                    if line.startswith('module '):
-                        lines[i] = "module {} exposing (..)".format(dep_filename[:-4])
-                        break
-            with open(file, 'w') as f:
-                for line in lines:
-                    f.write(line)
+        for dep_path in args.dependencies:
+            dep_filename = os.path.basename(dep_path)
+            copied_dep_path = shutil.copy(dep_path, os.path.join(ELM_TESTER_DIR, 'tests'))
+            copied_dependencies_path.append(copied_dep_path)
+            if args.expose:
+                # Expose all Elm functions in module
+                with open(copied_dep_path) as f:
+                    lines = f.readlines()
+                    for i, line in enumerate(lines):
+                        if line.startswith('module '):
+                            lines[i] = "module {} exposing (..)".format(dep_filename[:-4])
+                            break
+                with open(copied_dep_path, 'w') as f:
+                    for line in lines:
+                        f.write(line)
 
     if args.verbose:
         print('Running tests...', end='')
 
     try:
+        # proc = subprocess.run(['elm-test'], cwd=ELM_TESTER_DIR)
         proc = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stdout=subprocess.PIPE)
         result_json = decode_result(proc)
         if args.verbose:
@@ -194,9 +202,8 @@ def grade(argv):
             if args.verbose:
                 print('Cleaning up...')
             os.remove(os.path.join(ELM_TESTER_DIR, 'tests', TESTS_FILENAME))
-            if args.dependencies is not None:
-                for dep_filename in args.dependencies:
-                    os.remove(os.path.join(ELM_TESTER_DIR, 'tests', dep_filename))
+            for copied_dep_path in copied_dependencies_path:
+                os.remove(copied_dep_path)
 
         if args.output is not None:
             print(args.output)

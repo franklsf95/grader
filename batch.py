@@ -50,7 +50,8 @@ def main():
 
     # If args.repo is set, run once and exit
     if args.repo is not None:
-        fn(args.repo, Context(args, None, None))
+        ret = fn(args.repo, Context(args, None, None))
+        print(ret)
         exit()
 
     # Read CSV for repositories
