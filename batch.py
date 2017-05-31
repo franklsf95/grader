@@ -42,6 +42,12 @@ def main():
     if fn is None:
         raise RuntimeError("> Don't know how to '{0}'".format(args.action))
 
+    # Pre-routine for action
+    # Copy the solutions into elm-tester directory
+    if args.action == 'grade':
+        for solution in SOLUTION_FILES:
+            shutil.copy(os.path.join(TESTS_DIR, HW_DIR, 'solution', solution), os.path.join(ELM_TESTER_DIR, 'tests'))
+
     # If args.repo is set, run once and exit
     if args.repo is not None:
         fn(args.repo, Context(args, None, None))
@@ -53,11 +59,6 @@ def main():
     # Context can be modified
     ctx = Context(args, summary, ALIAS_POOL)
     return_values = []
-    
-    # Copy the solutions into elm-tester directory
-    if args.action == 'grade':
-        for solution in SOLUTION_FILES:
-            shutil.copy(os.path.join(TESTS_DIR, HW_DIR,'solution', solution), os.path.join(ELM_TESTER_DIR, 'tests'))
 
     for i, repo in enumerate(summary['Repo']):
         if len(repo) == 0:
