@@ -16,31 +16,17 @@ class TestingFailureError(Exception):
     pass
 
 
-# def decode_result(result_raw):
-#     """
-#     Parses the testing result into a Python object.
-#     :param result_raw: bytes, raw output from Elm
-#     :return: a list of dictionaries
-#     """
-#     result_str = result_raw.stdout.decode('utf-8')
-#     lines = result_str.split('\n')
-#     result = []
-#     for line in lines:
-#         print(line)
-#         if len(line) > 0:
-#             result.append(json.loads(line))
-def decode_result():
+def decode_result(proc):
     """
     Parses the testing result into a Python object.
-    :param result_raw: bytes, raw output from Elm
+    :param proc: CompletedProcess
     :return: a list of dictionaries
     """
+    lines = proc.stdout.decode('utf-8').split('\n')
     result = []
-    with open(os.path.join(ELM_TESTER_DIR,'raw_results.txt'), 'r') as f:
-        for line in f:
-            if len(line) > 0:
-                result.append(json.loads(line))
-    os.remove(os.path.join(ELM_TESTER_DIR,'raw_results.txt'))
+    for line in lines:
+        if len(line) > 0:
+            result.append(json.loads(line))
     return result
 
 
@@ -87,12 +73,11 @@ def generate_report(test_result, n_tests):
     :return: (string, int), (report text, points)
     """
     # Pre-processing
-
     test_events = list(filter(lambda e: e['event'] == 'testCompleted', test_result))
 
-    # We map some tests, count_tests therefore doesn't work, ignore this line
-    # if len(test_events) != n_tests:
-    #     raise TestingFailureError("Wrong number of test results; expecting {0}, got {1}".format(n_tests, len(test_events)))
+    if len(test_events) != n_tests:
+        raise TestingFailureError("Wrong number of test results; expecting {0}, got {1}".format(
+            n_tests, len(test_events)))
 
     # Initialization
     report = []
@@ -190,14 +175,9 @@ def grade(argv):
     if args.verbose:
         print('Running tests...', end='')
 
-    # subprocess.run is cutting off theh outputs for some reason, call is older but works
-    # I can't figure out to get this to work so I put this command into a bash file and will call 
-    # that file through subprocess
-
     try:
-        subprocess.run(['./run_tests.sh'], cwd=ELM_TESTER_DIR)
-
-        result_json = decode_result()
+        proc = subprocess.run(['elm-test', '--report', 'json'], cwd=ELM_TESTER_DIR, stdout=subprocess.PIPE)
+        result_json = decode_result(proc)
         if args.verbose:
             print(' done.')
 
