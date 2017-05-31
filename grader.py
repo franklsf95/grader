@@ -104,7 +104,7 @@ def generate_report(test_result, n_tests):
 
     # Utility functions
     def conclude_suite():
-        nonlocal total, my_total
+        nonlocal total, my_total, current_suite, subtotal, my_subtotal
         if current_suite is not None:
             # Conclude previous test suite
             report.append('')
@@ -227,7 +227,7 @@ def grade(argv):
         return score
 
     except IndexError:
-        print("Test result incomplete")
+        print('Error: incomplete test result possibly due to crash')
         return 0
 
 
